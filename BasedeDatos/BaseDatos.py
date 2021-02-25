@@ -27,9 +27,9 @@ class AuthGroupPermissions(models.Model):
 
 
 class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
     content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
     codename = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
 
     class Meta:
         managed = False
@@ -40,15 +40,14 @@ class AuthPermission(models.Model):
 class AuthUser(models.Model):
     password = models.CharField(max_length=128)
     last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
+    is_superuser = models.BooleanField()
     username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
+    is_staff = models.BooleanField()
+    is_active = models.BooleanField()
     date_joined = models.DateTimeField()
-    api_token = models.TextField(blank=True, null=True)
+    first_name = models.CharField(max_length=150)
 
     class Meta:
         managed = False
@@ -79,10 +78,10 @@ class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
     object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
     content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    action_flag = models.PositiveSmallIntegerField()
 
     class Meta:
         managed = False
@@ -119,15 +118,6 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class Migrations(models.Model):
-    migration = models.CharField(max_length=255)
-    batch = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'migrations'
-
-
 class ModeloCliente(models.Model):
     cliente_id = models.AutoField(primary_key=True)
     cedula = models.CharField(unique=True, max_length=10)
@@ -152,8 +142,8 @@ class ModeloCuenta(models.Model):
     numero = models.CharField(unique=True, max_length=20)
     fechaapertura = models.DateTimeField(db_column='fechaApertura')  # Field name made lowercase.
     tipocuenta = models.CharField(db_column='tipoCuenta', max_length=30)  # Field name made lowercase.
-    saldo = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.IntegerField()
+    saldo = models.DecimalField(max_digits=10, decimal_places=5)  # max_digits and decimal_places have been guessed, as this database handles decimal fields as float
+    estado = models.BooleanField()
     date_created = models.DateTimeField()
     updated_at = models.DateTimeField()
     cliente = models.ForeignKey(ModeloCliente, models.DO_NOTHING)
@@ -167,7 +157,7 @@ class ModeloTransaccion(models.Model):
     transaccion_id = models.AutoField(primary_key=True)
     fecha = models.DateTimeField()
     tipo = models.CharField(max_length=30)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    valor = models.DecimalField(max_digits=10, decimal_places=5)  # max_digits and decimal_places have been guessed, as this database handles decimal fields as float
     descripcion = models.TextField()
     date_created = models.DateTimeField()
     updated_at = models.DateTimeField()
